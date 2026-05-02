@@ -1,7 +1,9 @@
 package net.engineeringdigest.journalApp.controller;
 
 import net.engineeringdigest.journalApp.entities.User;
+import net.engineeringdigest.journalApp.entities.Weather;
 import net.engineeringdigest.journalApp.service.UserService;
+import net.engineeringdigest.journalApp.service.WeatherServiceV1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +16,15 @@ public class PublicController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/health-check")
+    @Autowired
+    private WeatherServiceV1 weatherService;
+
+    @GetMapping("/greet")
     public ResponseEntity<String> healthCheck() {
-        return new ResponseEntity<>("Hello World", HttpStatus.OK);
+        Weather weather = weatherService.getCurrentWeather("mumbai");
+        if (weather == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>("Hello World, weather currently is : " + weather.current.temp_c + "'c", HttpStatus.OK);
     }
 
     @PostMapping
